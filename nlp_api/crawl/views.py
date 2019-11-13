@@ -25,8 +25,9 @@ headers = {
 
 def index(request):
     id = request.GET['id']
-    # crawl({'key' : id, 'value' : 10})
-    return JsonResponse({'data' : crawl(id)})
+    rsult = crawl(id)
+    rating_tb = 0
+    return JsonResponse({'data' : rsult , 'total' : len(rsult), 'rating_tb': (rating_tb / len(rsult))})
 
 def getAllReview(key):
     url = 'https://www.imdb.com/title/{key}/reviews?ref_=tt_urv'.format(key = key)
@@ -62,7 +63,8 @@ def crawl(id):
             
             el = {
                 'rating' : rating,
-                'content' :''.join(commentList)
+                'content' :''.join(commentList),
+                'id' : i + count +1
             }
             count = count + 1
             if i + count > all_cmt:

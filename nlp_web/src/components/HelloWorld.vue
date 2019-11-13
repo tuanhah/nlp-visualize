@@ -4,53 +4,57 @@
       <h1>{{ msg }}</h1>
       <input class="input-text" v-model="url"/>
       <div>
-        <span class ="text-error" v-if ="haveError">Please type url</span>
+        <span class ="text-error" v-if ="haveError">Hãy nhập url của phim cần đánh giá</span>
       </div>
       <div>
         <button @click="getData"> Analysic </button>
       </div>
+      <div v-show="showVisualize" class = "analysic float-div">
+        <div class="sumary">
+          <div class="n1-div">Tổng số bình luận</div>
+          <div>{{totalReview}}</div>
+        </div>
+        <div class="sumary">
+          <div class="n1-div">Rating trung bình</div>
+          <div>{{average_rating}}</div>
+        </div>
+        <div class="sumary">
+          <div class="n1-div">Số bình luận tích cực</div>
+          <div>500</div>
+        </div>
+        <div class="sumary">
+          <div class="n1-div">Số bình luận tiêu cực</div>
+          <div>500</div>
+        </div>
+      </div>
       <div v-show="showVisualize" class = "analysic">
         <div class ="pie-chart" >
           <apexchart type=pie width=380 :options="chartOptions" :series="series" />
+          <span class='span-text'>Tỉ lệ bình luận trong phim</span>
         </div>
         <div class="table">
-          <!-- <table>
-            <thead>
-              <tr>
-                <th class ="text-left">ID</th>
-                <th class ="text-left">Rating</th>
-                <th class ="text-left">Content</th>
-                <th class ="text-left">Classify</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in dataTable">
-                <td>{{item.rating}}</td>
-                <td>{{item.rating}}</td>
-                <td>{{item.rating}}</td>
-                <td>{{item.rating}}</td>
-              </tr>
-            </tbody>
-          </table> -->
-
-
           <el-table
             :data="tableData"
-            height="500"
+            height="600"
             style="width: 100%">
             <el-table-column
-              prop="date"
-              label="Date"
+              prop="id"
+              label="ID"
               width="100">
             </el-table-column>
             <el-table-column
-              prop="name"
-              label="Name"
-              width="480">
+              prop="rating"
+              label="Rating"
+              width="100">
             </el-table-column>
             <el-table-column
-              prop="address"
-              label="Address">
+              prop="content"
+              label="Content"
+              width="880">
+            </el-table-column>
+            <el-table-column
+              prop="class"
+              label="Classification">
             </el-table-column>
           </el-table>
         </div>
@@ -74,12 +78,12 @@ export default {
     },
   data () {
     return {
-      msg: 'Please type url of film',
+      msg: 'Hệ thống đánh giá phim dựa theo trang IMDB',
       url: null,
       showVisualize : false,
       loading: false,
       haveError: false,
-      series: [50,50],
+      series: [70,30],
       chartOptions: {
         labels: ['Positive', 'Negative'],
         responsive: [{
@@ -94,40 +98,14 @@ export default {
           }
         }]
       },
-      tableData: [{
-          date: '2016-05-03',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-02',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-04',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-01',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-08',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-06',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }, {
-          date: '2016-05-07',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles'
-        }],
+      tableData: [],
+      average_rating: 0,
+      totalReview: 0,
     }
   },
   methods: {
     getData() {
-      this.url ="https://www.imdb.com/title/tt4777008/reviews?ref_=tt_urv";
+      // this.url ="https://www.imdb.com/title/tt3417422/reviews?ref_=tt_urv";
       if (! this.url) {
         this.showVisualize = false;
         this.loading = false;
@@ -152,7 +130,17 @@ export default {
       if (id) {
         let url = "http://localhost:8008/crawl/?id=" + id;
         this.$axios.get(url).then(res =>{
-          console.log(res);
+          this.tableData = res.data.data;
+          let rating_tb = 0;
+          this.totalReview = res.data.total;
+          res.data.data.forEach(el => {
+            if (el.rating) {
+              rating_tb = rating_tb + parseInt(el.rating);
+            }
+          });
+          console.log(rating_tb);
+          console.log(res.data.total);
+          this.average_rating = Math.round(rating_tb / res.data.total *100) /100;;
           this.loading = false;
         })
         .catch(e => {
@@ -167,18 +155,54 @@ export default {
 
 }
 </script>
+<style>
+.el-table--fit {
+  border: 1px solid #EBEEF5;
+}
+.el-table__row td{
+  border-right: 1px solid #EBEEF5;
+}
+</style>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1, h2 {
   font-weight: normal;
 }
+input {
+  padding-left: 10px;
+  margin-bottom: 5px;
+}
 .text-error{
   color: red;
 }
+.float-div {
+  margin-top: 100px;
+  margin-bottom: 100px;
+  background: #F5F5F5;
+}
+.n1-div {
+  margin-top: 19px;
+  margin-bottom: 5px;
+}
+.sumary {
+    border:none;
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 222px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    background: #2cad91;
+    min-width: 163px;
+    min-height: 70px;
+    color: white;
+}
+.span-text{
+  margin-left: -133px;
+}
 .input-text {
   width: 40%;
-  height: 30px;
+  height: 53px;
   border-radius: 4px;
   border: 1px solid #2dac91;
   padding-top: 5px;
@@ -186,11 +210,11 @@ h1, h2 {
 button {
   background-color: #2dac91;
   border: 1px solid #2dac91;
-  width: 80px;
-  margin-top: 5px;
+  width: 146px;
+  margin-top: 15px;
   text-transform: uppercase;
   /* font-weight: 500; */
-  height: 33px;
+  height: 45px;
   color: white;
   border-radius: 4px;
 }
