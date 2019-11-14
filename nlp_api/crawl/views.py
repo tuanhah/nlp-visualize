@@ -7,6 +7,9 @@ from django.http import JsonResponse
 import requests
 from lxml.etree import HTML
 import csv
+import json
+
+# from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 headers = {
@@ -23,11 +26,27 @@ headers = {
 
 
 
-def index(request):
+def crawlData(request):
     id = request.GET['id']
+    model =  request.GET['model']
     rsult = crawl(id)
     rating_tb = 0
     return JsonResponse({'data' : rsult , 'total' : len(rsult), 'rating_tb': (rating_tb / len(rsult))})
+
+
+# @ensure_csrf_cookie
+def customData(request):
+    datas = json.loads(request.body.decode('utf-8'))
+    data = datas['data']
+    model = datas['model']
+    rating_tb = 0
+    rsult= [{
+        'rating' : -10,
+        'content' : data,
+        'id' : 1
+    }]
+    return JsonResponse({'data' : rsult , 'total' : len(rsult), 'rating_tb': (rating_tb / len(rsult))})
+
 
 def getAllReview(key):
     url = 'https://www.imdb.com/title/{key}/reviews?ref_=tt_urv'.format(key = key)
