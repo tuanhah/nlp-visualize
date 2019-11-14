@@ -11,3 +11,4 @@ npl_api:
 
 
 + Vì t ib mà m k rep nên mày sửa thêm cái options model nhé, t k biết tên mấy cái model, sửa ở 
+model_tr
