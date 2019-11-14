@@ -41,7 +41,7 @@ def customData(request):
     model = datas['model']
     rating_tb = 0
     rsult= [{
-        'rating' : -10,
+        'rating' : 0,
         'content' : data,
         'id' : 1
     }]

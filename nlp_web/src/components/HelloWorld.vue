@@ -243,7 +243,8 @@ export default {
           rating_tb = rating_tb + parseInt(el.rating);
         }
       })
-      this.average_rating = Math.round(rating_tb / res.data.total *100) /100;;
+      this.average_rating = Math.round(rating_tb / res.data.total *100) /100;
+      if  (this.average_rating < 0) this.average_rating = "None";
       this.loading = false;
     }
   },
