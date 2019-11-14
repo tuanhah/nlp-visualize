@@ -10,5 +10,5 @@ npl_api:
 2. python3 manage runserver 8008
 
 
-+ Vì t ib mà m k rep nên mày sửa thêm cái options model nhé, t k biết tên mấy cái model, sửa ở 
-model_tr
++ Sửa thêm cái options model nhé, t k biết tên mấy cái model, sửa ở 
+model_training
